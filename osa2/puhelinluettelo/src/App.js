@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 
+import personsService from './services/persons';
 import PersonFrom from './components/PersonForm';
 import Persons from './components/Persons';
 
@@ -11,8 +11,8 @@ const App = () => {
 	const [searchString, setSearchString] = useState('');
 
 	useEffect(() => {
-		axios.get('http://localhost:3001/persons').then((response) => {
-			setPersons(response.data);
+		personsService.getAll().then((initialPersons) => {
+			setPersons(initialPersons);
 		});
 	}, []);
 
@@ -26,11 +26,13 @@ const App = () => {
 		const person = {
 			name: newName,
 			number: newNumber,
-			id: persons.length + 1,
 		};
-		setPersons(persons.concat(person));
-		setNewName('');
-		setNewNumber('');
+
+		personsService.create(person).then((returnedPerson) => {
+			setPersons(persons.concat(returnedPerson));
+			setNewName('');
+			setNewNumber('');
+		});
 	};
 
 	const handleNameChange = (event) => setNewName(event.target.value);
@@ -44,6 +46,18 @@ const App = () => {
 			: persons.filter((e) =>
 					e.name.toLowerCase().includes(searchString.toLowerCase())
 			  );
+
+	const remove = (id) => {
+		const name = persons.find((i) => i.id === id).name;
+		if (window.confirm(`Delete ${name} from database?`)) {
+			personsService
+				.remove(id)
+				.catch(() => {
+					alert(` ${name} has already been deleted from database`);
+				})
+				.finally(setPersons(persons.filter((p) => p.id !== id)));
+		}
+	};
 
 	return (
 		<div>
@@ -59,7 +73,7 @@ const App = () => {
 				numberValue={newNumber}
 			/>
 			<h2>Numbers</h2>
-			<Persons persons={personsToShow} />
+			<Persons persons={personsToShow} remove={remove} />
 		</div>
 	);
 };
