@@ -3,18 +3,32 @@ import { useState, useEffect } from 'react';
 import personsService from './services/persons';
 import PersonFrom from './components/PersonForm';
 import Persons from './components/Persons';
+import Notification from './components/Notification';
+
+import './index.css';
 
 const App = () => {
 	const [persons, setPersons] = useState([]);
 	const [newName, setNewName] = useState('');
 	const [newNumber, setNewNumber] = useState('');
 	const [searchString, setSearchString] = useState('');
+	const [notification, setNotification] = useState({
+		text: '',
+		className: '',
+	});
 
 	useEffect(() => {
 		personsService.getAll().then((initialPersons) => {
 			setPersons(initialPersons);
 		});
 	}, []);
+
+	const notify = (notification, type, timeout = 5000) => {
+		setNotification({ text: notification, className: type });
+		setTimeout(() => {
+			setNotification({ text: '' });
+		}, timeout);
+	};
 
 	const addPerson = (event) => {
 		event.preventDefault();
@@ -27,7 +41,7 @@ const App = () => {
 		if (persons.some((p) => p.name === newName)) {
 			if (
 				window.confirm(
-					`${newName} on jo listassa, haluatko päivittää numeron?`
+					`${newName} already exist, do you want to update number?`
 				)
 			) {
 				const id = persons.find((p) => p.name === newName).id;
@@ -39,17 +53,22 @@ const App = () => {
 								p.id !== id ? p : returnedPerson
 							)
 						);
+						notify(
+							`Updated ${newName} with number ${newNumber}`,
+							'ok'
+						);
 						setNewName('');
 						setNewNumber('');
 					})
 					.catch(() => {
-						alert(`${newName} not found!`);
+						notify(`${newName} not found!`, 'error');
 						setPersons(persons.filter((p) => p.id !== id));
 					});
 			}
 		} else {
 			personsService.create(person).then((returnedPerson) => {
 				setPersons(persons.concat(returnedPerson));
+				notify(`Added ${newName}`, 'ok');
 				setNewName('');
 				setNewNumber('');
 			});
@@ -73,8 +92,12 @@ const App = () => {
 		if (window.confirm(`Delete ${name} from database?`)) {
 			personsService
 				.remove(id)
+				.then(notify(`${name} deleted from database`, 'ok'))
 				.catch(() => {
-					alert(` ${name} has already been deleted from database`);
+					notify(
+						`${name} has already been deleted from database`,
+						'error'
+					);
 				})
 				.finally(setPersons(persons.filter((p) => p.id !== id)));
 		}
@@ -83,6 +106,10 @@ const App = () => {
 	return (
 		<div>
 			<h1>Phonebook</h1>
+			<Notification
+				className={notification.className}
+				message={notification.text}
+			/>
 			Filter with:{' '}
 			<input value={searchString} onChange={handleSearchStringChange} />
 			<h2>Add a new</h2>
