@@ -18,21 +18,34 @@ const App = () => {
 
 	const addPerson = (event) => {
 		event.preventDefault();
-		if (persons.some((e) => e.name === newName)) {
-			alert(`${newName} on jo listassa`);
-			return;
-		}
 
 		const person = {
 			name: newName,
 			number: newNumber,
 		};
 
-		personsService.create(person).then((returnedPerson) => {
-			setPersons(persons.concat(returnedPerson));
-			setNewName('');
-			setNewNumber('');
-		});
+		if (persons.some((e) => e.name === newName)) {
+			if (
+				window.confirm(
+					`${newName} on jo listassa, haluatko päivittää numeron?`
+				)
+			) {
+				const id = persons.find((e) => e.name === newName).id;
+				personsService.update(id, person).then((returnedPerson) => {
+					setPersons(
+						persons.map((e) => (e.id !== id ? e : returnedPerson))
+					);
+					setNewName('');
+					setNewNumber('');
+				});
+			}
+		} else {
+			personsService.create(person).then((returnedPerson) => {
+				setPersons(persons.concat(returnedPerson));
+				setNewName('');
+				setNewNumber('');
+			});
+		}
 	};
 
 	const handleNameChange = (event) => setNewName(event.target.value);
