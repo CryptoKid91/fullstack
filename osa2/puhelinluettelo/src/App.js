@@ -24,20 +24,28 @@ const App = () => {
 			number: newNumber,
 		};
 
-		if (persons.some((e) => e.name === newName)) {
+		if (persons.some((p) => p.name === newName)) {
 			if (
 				window.confirm(
 					`${newName} on jo listassa, haluatko päivittää numeron?`
 				)
 			) {
-				const id = persons.find((e) => e.name === newName).id;
-				personsService.update(id, person).then((returnedPerson) => {
-					setPersons(
-						persons.map((e) => (e.id !== id ? e : returnedPerson))
-					);
-					setNewName('');
-					setNewNumber('');
-				});
+				const id = persons.find((p) => p.name === newName).id;
+				personsService
+					.update(id, person)
+					.then((returnedPerson) => {
+						setPersons(
+							persons.map((p) =>
+								p.id !== id ? p : returnedPerson
+							)
+						);
+						setNewName('');
+						setNewNumber('');
+					})
+					.catch(() => {
+						alert(`${newName} not found!`);
+						setPersons(persons.filter((p) => p.id !== id));
+					});
 			}
 		} else {
 			personsService.create(person).then((returnedPerson) => {
@@ -56,8 +64,8 @@ const App = () => {
 	const personsToShow =
 		searchString === ''
 			? persons
-			: persons.filter((e) =>
-					e.name.toLowerCase().includes(searchString.toLowerCase())
+			: persons.filter((p) =>
+					p.name.toLowerCase().includes(searchString.toLowerCase())
 			  );
 
 	const remove = (id) => {
