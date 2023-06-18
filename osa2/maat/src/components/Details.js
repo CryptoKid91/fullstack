@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
+import Weather from './Weather';
 import countriesService from '../services/countries';
 
 const Details = ({ country }) => {
 	const [selectedCountry, setSelectedCountry] = useState('');
 
 	useEffect(() => {
-		countriesService
-			.getSelected(country)
-			.then((responseCountry) => setSelectedCountry(responseCountry))
-			.catch((err) => console.log(err));
+		if (country) {
+			countriesService
+				.getSelected(country)
+				.then((responseCountry) => setSelectedCountry(responseCountry))
+				.catch((err) => console.log(err));
+		}
 	}, [country]);
 
 	if (!selectedCountry) {
@@ -38,7 +41,11 @@ const Details = ({ country }) => {
 				src={selectedCountry.flags.svg}
 				alt={`Flag of ${selectedCountry.name.common}`}
 				width="320"
-				heigth="196"
+			/>
+			<br />
+			<Weather
+				city={selectedCountry.capital}
+				latlon={selectedCountry.capitalInfo.latlng}
 			/>
 		</div>
 	);
