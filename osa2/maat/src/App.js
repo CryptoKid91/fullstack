@@ -6,20 +6,34 @@ import Details from './components/Details';
 const App = () => {
 	const [searchString, setSearchString] = useState('');
 	const [countries, setCountries] = useState([]);
+	const [countriesToShow, setCountriesToShow] = useState([]);
 
 	useEffect(() => {
-		countriesService
-			.getAll()
-			.then((initialCountries) => setCountries(initialCountries));
+		countriesService.getAll().then((initialCountries) => {
+			setCountries(initialCountries);
+			setCountriesToShow(initialCountries);
+		});
 	}, []);
 
-	const handleSearchStringChange = (event) =>
+	const handleSearchStringChange = (event) => {
 		setSearchString(event.target.value);
+		setCountriesToShow(
+			countries.filter((e) =>
+				e.name.common
+					.toLowerCase()
+					.includes(event.target.value.toLowerCase())
+			)
+		);
+	};
 
-	const countriesToShow = countries.filter((e) =>
-		e.name.common.toLowerCase().includes(searchString.toLowerCase())
-	);
-	console.log(countriesToShow);
+	const showCountry = (name) => () => {
+		console.log(`Nappia painetu maan ${name} kohdalla`);
+		setCountriesToShow(
+			countries.filter((e) =>
+				e.name.common.toLowerCase().includes(name.toLowerCase())
+			)
+		);
+	};
 
 	return (
 		<div>
@@ -30,7 +44,12 @@ const App = () => {
 					<li>Too many countries</li>
 				) : countriesToShow.length > 1 ? (
 					countriesToShow.map((e) => (
-						<li key={e.name.common}>{e.name.common}</li>
+						<li key={e.name.common}>
+							{e.name.common}
+							<button onClick={showCountry(e.name.common)}>
+								Show
+							</button>
+						</li>
 					))
 				) : (
 					<Details country={countriesToShow[0]?.name.common} />
