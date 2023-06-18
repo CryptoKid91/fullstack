@@ -1,17 +1,9 @@
 import axios from 'axios';
 
-const baseUrl = 'http://localhost:3001/persons';
+const baseUrl = '/api/persons';
 
 const getAll = () => {
-	//return axios.get(baseUrl).then((response) => response.data);
-	const nonExisting = {
-		name: 'Lucifer Aamutähti',
-		number: '040-123456',
-		id: 666,
-	};
-	return axios
-		.get(baseUrl)
-		.then((response) => response.data.concat(nonExisting));
+	return axios.get(baseUrl).then((response) => response.data);
 };
 
 const create = (newObject) =>
