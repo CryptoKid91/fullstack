@@ -1,0 +1,7 @@
+POST https://phonebook-tvhs.onrender.com/api/persons
+Content-Type: application/json
+
+{
+	"name": "Barbara Liskov",
+	"number": "0400-3214321"
+}
