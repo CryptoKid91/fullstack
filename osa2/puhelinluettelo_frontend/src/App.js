@@ -66,12 +66,17 @@ const App = () => {
 					});
 			}
 		} else {
-			personsService.create(person).then((returnedPerson) => {
-				setPersons(persons.concat(returnedPerson));
-				notify(`Added ${newName}`, 'ok');
-				setNewName('');
-				setNewNumber('');
-			});
+			personsService
+				.create(person)
+				.then((returnedPerson) => {
+					setPersons(persons.concat(returnedPerson));
+					notify(`Added ${newName}`, 'ok');
+					setNewName('');
+					setNewNumber('');
+				})
+				.catch(() =>
+					notify(`Error creating person ${newName}`, 'error')
+				);
 		}
 	};
 
