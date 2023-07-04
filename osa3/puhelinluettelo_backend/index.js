@@ -8,7 +8,7 @@ const cors = require('cors');
 app.use(cors());
 
 const morgan = require('morgan');
-morgan.token('postData', (req, res) => JSON.stringify(req.body));
+morgan.token('postData', (req) => JSON.stringify(req.body));
 app.use(
 	morgan(
 		':method :url :status :res[content-length] - :response-time ms :postData'
@@ -41,7 +41,7 @@ app.get('/api/persons/:id', (req, res, next) => {
 			if (person) {
 				res.json(person);
 			} else {
-				let e = new Error('Person not found');
+				const e = new Error('Person not found');
 				e.name = 'NotFound';
 				throw e;
 			}
@@ -55,7 +55,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
 			if (result) {
 				res.status(204).end();
 			} else {
-				let e = new Error('Person not found');
+				const e = new Error('Person not found');
 				e.name = 'NotFound';
 				throw e;
 			}
@@ -64,10 +64,10 @@ app.delete('/api/persons/:id', (req, res, next) => {
 });
 
 app.post('/api/persons', (req, res, next) => {
-	const body = req.body;
+	const { body } = req;
 
 	if (!body.name || !body.number) {
-		let err = new Error('No content');
+		const err = new Error('No content');
 		err.name = 'NoContent';
 		throw err;
 	}
@@ -95,7 +95,7 @@ app.put('/api/persons/:id', (req, res, next) => {
 			if (updatedPerson) {
 				res.json(updatedPerson);
 			} else {
-				let e = new Error('Person not found');
+				const e = new Error('Person not found');
 				e.name = 'NotFound';
 				throw e;
 			}
@@ -106,6 +106,7 @@ app.put('/api/persons/:id', (req, res, next) => {
 const unknownEndpoint = (req, res) => {
 	res.status(404).send({ error: 'unknown endpoint' });
 };
+
 app.use(unknownEndpoint);
 
 const errorHandler = (err, req, res, next) => {
@@ -114,20 +115,19 @@ const errorHandler = (err, req, res, next) => {
 	switch (err.name) {
 		case 'CastError':
 			return res.status(400).send({ error: 'Malformatted id' });
-			break;
 		case 'NoContent':
 			return res.status(400).send({ error: 'Content missing' });
-			break;
 		case 'ValidationError':
 			return res.status(400).json({ error: err.message });
-			break;
 		case 'NotFound':
 			return res.status(404).json({ error: err.message });
+		default:
 			break;
 	}
 
 	next(err);
 };
+
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
