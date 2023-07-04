@@ -1,0 +1,9 @@
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+
+{
+	"title": "Approaching Pavonis Mons by balloon",
+	"author": "Alastair Reynolds",
+	"url": "http://approachingpavonis.blogspot.com",
+	"likes": 3
+}
