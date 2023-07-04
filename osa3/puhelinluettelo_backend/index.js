@@ -38,15 +38,27 @@ app.get('/api/persons', (req, res, next) => {
 app.get('/api/persons/:id', (req, res, next) => {
 	Person.findById(req.params.id)
 		.then((person) => {
-			res.json(person);
+			if (person) {
+				res.json(person);
+			} else {
+				let e = new Error('Person not found');
+				e.name = 'NotFound';
+				throw e;
+			}
 		})
 		.catch(next);
 });
 
 app.delete('/api/persons/:id', (req, res, next) => {
-	Person.findByIdAndRemove(req.params.id)
+	Person.findByIdAndDelete(req.params.id)
 		.then((result) => {
-			res.status(204).end();
+			if (result) {
+				res.status(204).end();
+			} else {
+				let e = new Error('Person not found');
+				e.name = 'NotFound';
+				throw e;
+			}
 		})
 		.catch(next);
 });
@@ -72,15 +84,22 @@ app.post('/api/persons', (req, res, next) => {
 });
 
 app.put('/api/persons/:id', (req, res, next) => {
-	const body = req.body;
+	const { name, number } = req.body;
 
-	const person = {
-		name: body.name,
-		number: body.number,
-	};
-
-	Person.findByIdAndUpdate(req.params.id, person, { new: true })
-		.then((updatedPerson) => res.json(updatedPerson))
+	Person.findByIdAndUpdate(
+		req.params.id,
+		{ name, number },
+		{ new: true, runValidators: true, context: 'query' }
+	)
+		.then((updatedPerson) => {
+			if (updatedPerson) {
+				res.json(updatedPerson);
+			} else {
+				let e = new Error('Person not found');
+				e.name = 'NotFound';
+				throw e;
+			}
+		})
 		.catch(next);
 });
 
@@ -98,6 +117,12 @@ const errorHandler = (err, req, res, next) => {
 			break;
 		case 'NoContent':
 			return res.status(400).send({ error: 'Content missing' });
+			break;
+		case 'ValidationError':
+			return res.status(400).json({ error: err.message });
+			break;
+		case 'NotFound':
+			return res.status(404).json({ error: err.message });
 			break;
 	}
 

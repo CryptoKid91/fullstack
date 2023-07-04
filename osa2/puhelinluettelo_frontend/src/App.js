@@ -60,9 +60,14 @@ const App = () => {
 						setNewName('');
 						setNewNumber('');
 					})
-					.catch(() => {
-						notify(`${newName} not found!`, 'error');
-						setPersons(persons.filter((p) => p.id !== id));
+					.catch((err) => {
+						console.log(err);
+						if (err.response.status === 404) {
+							notify(`${newName} not found!`, 'error');
+							setPersons(persons.filter((p) => p.id !== id));
+						} else {
+							notify(err.response.data.error, 'error');
+						}
 					});
 			}
 		} else {
@@ -74,9 +79,7 @@ const App = () => {
 					setNewName('');
 					setNewNumber('');
 				})
-				.catch(() =>
-					notify(`Error creating person ${newName}`, 'error')
-				);
+				.catch((err) => notify(err.response.data.error, 'error'));
 		}
 	};
 
