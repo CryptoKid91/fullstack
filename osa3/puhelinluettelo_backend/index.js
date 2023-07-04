@@ -15,6 +15,12 @@ app.use(
 	)
 );
 
+const error = (name, message = 'Unspecified error') => {
+	const e = new Error(message);
+	e.name = name;
+	return e;
+};
+
 const Person = require('./models/person');
 
 app.get('/info', (req, res, next) => {
@@ -41,9 +47,7 @@ app.get('/api/persons/:id', (req, res, next) => {
 			if (person) {
 				res.json(person);
 			} else {
-				const e = new Error('Person not found');
-				e.name = 'NotFound';
-				throw e;
+				throw error('NotFound', 'Person not found');
 			}
 		})
 		.catch(next);
@@ -55,9 +59,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
 			if (result) {
 				res.status(204).end();
 			} else {
-				const e = new Error('Person not found');
-				e.name = 'NotFound';
-				throw e;
+				throw error('NotFound', 'Person not found');
 			}
 		})
 		.catch(next);
@@ -67,9 +69,7 @@ app.post('/api/persons', (req, res, next) => {
 	const { body } = req;
 
 	if (!body.name || !body.number) {
-		const err = new Error('No content');
-		err.name = 'NoContent';
-		throw err;
+		throw error('NoContent');
 	}
 
 	const person = new Person({
@@ -95,9 +95,7 @@ app.put('/api/persons/:id', (req, res, next) => {
 			if (updatedPerson) {
 				res.json(updatedPerson);
 			} else {
-				const e = new Error('Person not found');
-				e.name = 'NotFound';
-				throw e;
+				throw error('NotFound', 'Person not found');
 			}
 		})
 		.catch(next);
@@ -122,10 +120,8 @@ const errorHandler = (err, req, res, next) => {
 		case 'NotFound':
 			return res.status(404).json({ error: err.message });
 		default:
-			break;
+			next(err);
 	}
-
-	next(err);
 };
 
 app.use(errorHandler);
