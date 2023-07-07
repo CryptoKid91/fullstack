@@ -1,13 +1,13 @@
-const { totalLikes } = require('../utils/list_helper');
+const { mostBlogs } = require('../utils/list_helper');
 
-describe('Total likes', () => {
-	test('of empty list is zero', () => {
-		expect(totalLikes([])).toBe(0);
+describe('Author with most blogs', () => {
+	test('of empty list is undefined', () => {
+		expect(mostBlogs([])).toBeUndefined();
 	});
 
-	test('when list has only one blogs is thats likes', () => {
+	test('when list has only one blogs it is thats author', () => {
 		expect(
-			totalLikes([
+			mostBlogs([
 				{
 					_id: '64a46fa6de5b8d021fd8f34b',
 					title: 'Pluralistic',
@@ -17,12 +17,15 @@ describe('Total likes', () => {
 					__v: 0,
 				},
 			])
-		).toBe(4001);
+		).toEqual({
+			author: 'Cory Doctorow',
+			blogs: 1,
+		});
 	});
 
-	test('of a bigger list is calculated rigth', () => {
+	test('of a bigger list is the one with most blogs', () => {
 		expect(
-			totalLikes([
+			mostBlogs([
 				{
 					_id: '5a422a851b54a676234d17f7',
 					title: 'React patterns',
@@ -72,6 +75,9 @@ describe('Total likes', () => {
 					__v: 0,
 				},
 			])
-		).toBe(36);
+		).toEqual({
+			author: 'Robert C. Martin',
+			blogs: 3,
+		});
 	});
 });

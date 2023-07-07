@@ -1,13 +1,13 @@
-const { totalLikes } = require('../utils/list_helper');
+const { favoriteBlog } = require('../utils/list_helper');
 
-describe('Total likes', () => {
-	test('of empty list is zero', () => {
-		expect(totalLikes([])).toBe(0);
+describe('Favorite blog', () => {
+	test('of empty list is undefined', () => {
+		expect(favoriteBlog([])).toBeUndefined();
 	});
 
-	test('when list has only one blogs is thats likes', () => {
+	test('when list has only one blogs it is that', () => {
 		expect(
-			totalLikes([
+			favoriteBlog([
 				{
 					_id: '64a46fa6de5b8d021fd8f34b',
 					title: 'Pluralistic',
@@ -17,12 +17,19 @@ describe('Total likes', () => {
 					__v: 0,
 				},
 			])
-		).toBe(4001);
+		).toEqual({
+			_id: '64a46fa6de5b8d021fd8f34b',
+			title: 'Pluralistic',
+			author: 'Cory Doctorow',
+			url: 'https://pluralistic.net',
+			likes: 4001,
+			__v: 0,
+		});
 	});
 
-	test('of a bigger list is calculated rigth', () => {
+	test('of a bigger list is the one with most likes', () => {
 		expect(
-			totalLikes([
+			favoriteBlog([
 				{
 					_id: '5a422a851b54a676234d17f7',
 					title: 'React patterns',
@@ -72,6 +79,13 @@ describe('Total likes', () => {
 					__v: 0,
 				},
 			])
-		).toBe(36);
+		).toEqual({
+			_id: '5a422b3a1b54a676234d17f9',
+			title: 'Canonical string reduction',
+			author: 'Edsger W. Dijkstra',
+			url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+			likes: 12,
+			__v: 0,
+		});
 	});
 });

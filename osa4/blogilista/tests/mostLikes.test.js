@@ -1,13 +1,13 @@
-const { totalLikes } = require('../utils/list_helper');
+const { mostLikes } = require('../utils/list_helper');
 
-describe('Total likes', () => {
-	test('of empty list is zero', () => {
-		expect(totalLikes([])).toBe(0);
+describe('Author with most likes', () => {
+	test('of empty list is undefined', () => {
+		expect(mostLikes([])).toBeUndefined();
 	});
 
-	test('when list has only one blogs is thats likes', () => {
+	test('when list has only one blogs it is thats author', () => {
 		expect(
-			totalLikes([
+			mostLikes([
 				{
 					_id: '64a46fa6de5b8d021fd8f34b',
 					title: 'Pluralistic',
@@ -17,12 +17,15 @@ describe('Total likes', () => {
 					__v: 0,
 				},
 			])
-		).toBe(4001);
+		).toEqual({
+			author: 'Cory Doctorow',
+			likes: 4001,
+		});
 	});
 
-	test('of a bigger list is calculated rigth', () => {
+	test('of a bigger list is the one with most likes', () => {
 		expect(
-			totalLikes([
+			mostLikes([
 				{
 					_id: '5a422a851b54a676234d17f7',
 					title: 'React patterns',
@@ -72,6 +75,9 @@ describe('Total likes', () => {
 					__v: 0,
 				},
 			])
-		).toBe(36);
+		).toEqual({
+			author: 'Edsger W. Dijkstra',
+			likes: 17,
+		});
 	});
 });
