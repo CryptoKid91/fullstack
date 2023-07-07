@@ -22,21 +22,14 @@ const mostBlogs = (blogs) => {
 		return;
 	}
 
-	const authors = [];
+	const authors = new Map();
 	for (const blog of blogs) {
-		const i = authors.findIndex((e) => e.author === blog.author);
-
-		if (i === -1) {
-			authors.push({
-				author: blog.author,
-				blogs: 1,
-			});
-		} else {
-			authors[i].blogs++;
-		}
+		const count = (authors.get(blog.author) || 0) + 1;
+		authors.set(blog.author, count);
 	}
 
-	return authors.sort((a, b) => b.blogs - a.blogs)[0];
+	const a = Array.from(authors).sort((a, b) => b[1] - a[1]);
+	return { author: a[0][0], blogs: a[0][1] };
 };
 
 const mostLikes = (blogs) => {
@@ -44,21 +37,14 @@ const mostLikes = (blogs) => {
 		return;
 	}
 
-	const authors = [];
+	const authors = new Map();
 	for (const blog of blogs) {
-		const i = authors.findIndex((e) => e.author === blog.author);
-
-		if (i === -1) {
-			authors.push({
-				author: blog.author,
-				likes: blog.likes,
-			});
-		} else {
-			authors[i].likes += blog.likes;
-		}
+		const likes = (authors.get(blog.author) || 0) + blog.likes;
+		authors.set(blog.author, likes);
 	}
 
-	return authors.sort((a, b) => b.likes - a.likes)[0];
+	const a = Array.from(authors).sort((a, b) => b[1] - a[1]);
+	return { author: a[0][0], likes: a[0][1] };
 };
 
 module.exports = {
