@@ -11,20 +11,14 @@ blogsRouter.get('/', async (req, res) => {
 });
 
 blogsRouter.post('/', async (req, res, next) => {
-	const { body } = req;
+	const { body, user } = req;
 
 	if (!body.title || !body.url) {
 		throw error('NoContent', 'Title or URL missing');
 	}
 
-	const decodedToken = jwt.verify(req.token, process.env.SECRET);
-	if (!decodedToken.id) {
-		return res.status(401).json({ error: 'token invalid' });
-	}
-	const user = await User.findById(decodedToken.id);
-
-	if (!user) {
-		return res.status(401).json({ error: 'invalid user' });
+	if (!req.user) {
+		throw error('AuthError', 'No user found');
 	}
 
 	const blog = new Blog({
@@ -43,11 +37,19 @@ blogsRouter.post('/', async (req, res, next) => {
 });
 
 blogsRouter.delete('/:id', async (req, res, next) => {
-	const result = await Blog.findByIdAndRemove(req.params.id);
-	if (result) {
-		res.status(204).end();
+	const blog = await Blog.findById(req.params.id);
+
+	if (!blog) throw error('NotFound', `No blog with id ${req.params.id}`);
+
+	if (blog.user.toString() === req.user._id.toString()) {
+		const result = await Blog.findByIdAndRemove(req.params.id);
+		if (result) {
+			res.status(204).end();
+		} else {
+			throw error('NotFound', 'Blog not found');
+		}
 	} else {
-		throw error('NotFound', 'Blog not found');
+		throw error('AuthError', 'User not blogs owner');
 	}
 });
 
