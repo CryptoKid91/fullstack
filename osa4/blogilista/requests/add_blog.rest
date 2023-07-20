@@ -1,8 +1,9 @@
 POST http://localhost:3001/api/blogs
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhlbGxhcyIsImlkIjoiNjRiOTcxMDM1Y2ExOGVkNTRkN2M5MDU2IiwiaWF0IjoxNjg5ODc1ODY5fQ.GUT-vhQbPr5tkp2LJKc3IStq7UckkjiYr3zK9HganeM
 
 {
-  "title": "The Blag",
+  "title": "A Blag",
   "author": "Randall Munroe",
   "url": "http://blog.xkcd.com/",
   "likes": 28

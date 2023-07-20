@@ -17,7 +17,7 @@ describe('when there is initially one user at db', () => {
 		await user.save();
 	});
 
-	describe.only('User creation', () => {
+	describe('User creation', () => {
 		it('succeeds with a fresh username', async () => {
 			const usersAtStart = await helper.usersInDb();
 

@@ -18,12 +18,24 @@ const errorHandler = (err, req, res, next) => {
 			return res.status(404).json({ error: err.message });
 		case 'PasswordInvalid':
 			return res.status(400).json({ error: err.message });
+		case 'LoginError':
+			return res.status(401).json({ error: err.message });
 		default:
 			next(err);
 	}
 };
 
+const tokenExtractor = (req, res, next) => {
+	const authorization = req.get('authorization');
+	if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+		req.token = authorization.replace(/^bearer\s/i, '');
+	}
+
+	next();
+};
+
 module.exports = {
 	unknownEndpoint,
 	errorHandler,
+	tokenExtractor,
 };
