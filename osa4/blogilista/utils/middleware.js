@@ -16,6 +16,8 @@ const errorHandler = (err, req, res, next) => {
 			return res.status(400).json({ error: err.message });
 		case 'NotFound':
 			return res.status(404).json({ error: err.message });
+		case 'PasswordInvalid':
+			return res.status(400).json({ error: err.message });
 		default:
 			next(err);
 	}
