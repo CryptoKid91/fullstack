@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import * as personService from './services/persons';
+import './index.css';
 
 const Person = ({ person, handleClick }) => {
 	return (
@@ -69,17 +70,36 @@ const Persons = ({ filteredPersons, handleClick }) => (
 	</div>
 );
 
+const Notification = ({ notification: { message, className } }) => {
+	if (message === null) {
+		return null;
+	}
+
+	return <div className={className}>{message}</div>;
+};
+
 const App = () => {
 	const [persons, setPersons] = useState([]);
 	const [newName, setNewName] = useState('');
 	const [newNumber, setNewNumber] = useState('');
 	const [filterTerm, setFilterTerm] = useState('');
+	const [notification, setNotification] = useState({
+		message: '',
+		className: '',
+	});
 
 	useEffect(() => {
 		personService.getAll().then((response) => {
 			setPersons(response);
 		});
 	}, []);
+
+	const notify = (notification, type, timeout = 5000) => {
+		setNotification({ message: notification, className: type });
+		setTimeout(() => {
+			setNotification({ message: '' });
+		}, timeout);
+	};
 
 	const addPerson = (event) => {
 		event.preventDefault();
@@ -102,6 +122,7 @@ const App = () => {
 					);
 					setNewName('');
 					setNewNumber('');
+					notify(`${response.name} updated succesfully`, 'notice');
 				});
 			}
 		} else {
@@ -109,6 +130,7 @@ const App = () => {
 				setPersons(persons.concat(response));
 				setNewName('');
 				setNewNumber('');
+				notify(`${response.name} added succesfully`, 'notice');
 			});
 		}
 	};
@@ -125,15 +147,17 @@ const App = () => {
 				}?`
 			)
 		) {
-			personService
-				.remove(id)
-				.then(setPersons(persons.filter((p) => p.id !== id)));
+			personService.remove(id).then((response) => {
+				setPersons(persons.filter((p) => p.id !== id));
+				notify(`${response.name} deleted`, 'error');
+			});
 		}
 	};
 
 	return (
 		<div>
 			<h1>Phonebook</h1>
+			<Notification notification={notification} />
 			<Filter filterTerm={filterTerm} setFilterTerm={setFilterTerm} />
 			<PersonForm
 				{...{ addPerson, newName, setNewName, newNumber, setNewNumber }}
