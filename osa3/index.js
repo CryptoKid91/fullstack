@@ -9,6 +9,8 @@ app.use(express.json());
 const morgan = require('morgan');
 app.use(morgan('tiny'));
 
+app.use(express.static('dist'));
+
 let persons = [
 	{
 		name: 'Arto Hellas',
