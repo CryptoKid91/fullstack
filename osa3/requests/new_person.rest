@@ -1,0 +1,8 @@
+POST http://localhost:3001/api/persons
+content-type: application/json
+
+{
+	"name": "Testi Ukko",
+	"number": "040 1234567",
+	"definitely an actual field": "Yes"
+}
