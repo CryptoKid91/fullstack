@@ -1,6 +1,9 @@
 const express = require('express');
 const app = express();
 
+const cors = require('cors');
+app.use(cors());
+
 app.use(express.json());
 
 const morgan = require('morgan');
@@ -76,6 +79,24 @@ app.get('/api/persons/:id', (req, res) => {
 	}
 });
 
+app.put('/api/persons/:id', (req, res) => {
+	const id = Number(req.params.id);
+	const body = req.body;
+	const person = persons.find((p) => p.id === id);
+
+	if (person) {
+		const newPerson = {
+			name: body.name,
+			number: body.number,
+			id: person.id,
+		};
+		persons = persons.map((p) => (p.id == person.id ? newPerson : p));
+		res.json(newPerson);
+	} else {
+		res.status(404).end();
+	}
+});
+
 app.delete('/api/persons/:id', (req, res) => {
 	const id = Number(req.params.id);
 
@@ -87,7 +108,7 @@ app.delete('/api/persons/:id', (req, res) => {
 	}
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
 	console.log(`Server running on port ${PORT}`);
 });

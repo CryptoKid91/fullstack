@@ -140,16 +140,12 @@ const App = () => {
 	);
 
 	const handleClick = (id) => () => {
-		if (
-			window.confirm(
-				`Do you want to delete ${
-					persons.find((p) => p.id === id).name
-				}?`
-			)
-		) {
+		const name = persons.find((p) => p.id === id).name;
+
+		if (window.confirm(`Do you want to delete ${name}?`)) {
 			personService.remove(id).then((response) => {
 				setPersons(persons.filter((p) => p.id !== id));
-				notify(`${response.name} deleted`, 'error');
+				notify(`${name} deleted`, 'error');
 			});
 		}
 	};
