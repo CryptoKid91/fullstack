@@ -116,22 +116,37 @@ const App = () => {
 					`${newName} is already added to phonebook, replace old number?`
 				)
 			) {
-				personService.update(oldName.id, newPerson).then((response) => {
-					setPersons(
-						persons.map((p) => (p.id == oldName.id ? response : p))
+				personService
+					.update(oldName.id, newPerson)
+					.then((response) => {
+						setPersons(
+							persons.map((p) =>
+								p.id == oldName.id ? response : p
+							)
+						);
+						setNewName('');
+						setNewNumber('');
+						notify(
+							`${response.name} updated succesfully`,
+							'notice'
+						);
+					})
+					.catch((error) =>
+						notify(`${error.response.data.error}`, 'error')
 					);
-					setNewName('');
-					setNewNumber('');
-					notify(`${response.name} updated succesfully`, 'notice');
-				});
 			}
 		} else {
-			personService.create(newPerson).then((response) => {
-				setPersons(persons.concat(response));
-				setNewName('');
-				setNewNumber('');
-				notify(`${response.name} added succesfully`, 'notice');
-			});
+			personService
+				.create(newPerson)
+				.then((response) => {
+					setPersons(persons.concat(response));
+					setNewName('');
+					setNewNumber('');
+					notify(`${response.name} added succesfully`, 'notice');
+				})
+				.catch((error) =>
+					notify(`${error.response.data.error}`, 'error')
+				);
 		}
 	};
 
@@ -145,7 +160,7 @@ const App = () => {
 		if (window.confirm(`Do you want to delete ${name}?`)) {
 			personService.remove(id).then((response) => {
 				setPersons(persons.filter((p) => p.id !== id));
-				notify(`${name} deleted`, 'error');
+				notify(`${name} deleted`, 'notice');
 			});
 		}
 	};
