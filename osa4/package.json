@@ -1,0 +1,32 @@
+{
+	"name": "blogilista",
+	"version": "1.0.0",
+	"description": "",
+	"license": "MIT",
+	"author": "Marco Stålfors",
+	"type": "commonjs",
+	"main": "index.js",
+	"scripts": {
+		"start": "node index.js",
+		"dev": "nodemon index.js",
+		"test": "jest --verbose",
+		"build:ui:win": "@powershell Remove-Item -Recurse -Force dist && cd ../osa2/puhelinluettelo && npm run build && @powershell Copy-Item dist -Recurse  ../../osa3",
+		"build:ui": "rm -rf dist && cd ../osa2/puhelinluettelo && npm run build && cp -r dist ../../osa3",
+		"deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push",
+		"lint": "eslint ."
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.20.0",
+		"dotenv": "^16.4.7",
+		"eslint": "^9.20.1",
+		"globals": "^16.0.0",
+		"jest": "^29.7.0",
+		"nodemon": "^3.1.9"
+	},
+	"dependencies": {
+		"cors": "^2.8.5",
+		"express": "^4.21.2",
+		"mongoose": "^8.10.1",
+		"morgan": "^1.10.0"
+	}
+}
