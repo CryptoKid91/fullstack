@@ -1,9 +1,6 @@
-PUT http://localhost:3001/api/blogs/67b73f3692e635be7df5f3cc
+PUT http://localhost:3001/api/blogs/67bdb095cd68b8d3fc2e0ab4
 content-type: application/json
 
 {
-	"title": "Approaching Pavonis Mons by balloon",
-	"author": "Alastair Reynolds",
-	"url": "https://approachingpavonis.blogspot.com",
-	"likes": 123
+	"likes": 12
 }

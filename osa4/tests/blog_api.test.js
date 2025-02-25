@@ -67,6 +67,41 @@ describe('When adding a blog', () => {
 	});
 });
 
+describe('When deleting a blog', () => {
+	test('a valid id is deleted', async () => {
+		const blogsAtStart = await helper.blogsInDb();
+		const blogToDelete = blogsAtStart[0];
+
+		await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+
+		const blogsAtEnd = await helper.blogsInDb();
+
+		expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1);
+
+		const titles = blogsAtEnd.map((r) => r.title);
+		expect(titles).not.toContain(blogToDelete.title);
+	});
+
+	test('nonexistent id returns 404', async () => {
+		const blogsAtStart = await helper.blogsInDb();
+		const blogToDelete = await helper.nonExistingId();
+
+		await api.delete(`/api/blogs/${blogToDelete}`).expect(404);
+
+		const blogsAtEnd = await helper.blogsInDb();
+		expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
+	});
+
+	test('malformed id returns 400', async () => {
+		const blogsAtStart = await helper.blogsInDb();
+
+		await api.delete('/api/blogs/badbeef').expect(400);
+
+		const blogsAtEnd = await helper.blogsInDb();
+		expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
+	});
+});
+
 afterAll(async () => {
 	await mongoose.connection.close();
 });
