@@ -1,0 +1,16 @@
+@baseUrl = http://localhost:3001/api
+
+# @name create
+POST {{baseUrl}}/blogs
+content-type: application/json
+
+{
+	"title": "A test blog",
+	"author": "Tester",
+	"url": "www.example.com",
+	"likes": 42
+}
+
+###
+@id = {{create.response.body.id}}
+DELETE {{baseUrl}}/blogs/{{id}}
