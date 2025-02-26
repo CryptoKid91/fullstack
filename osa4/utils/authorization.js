@@ -11,7 +11,7 @@ const authorization = (req, res, next) => {
 			req.username = decodedToken.username;
 			req.uid = decodedToken.id;
 		} else {
-			return response.status(401).json({ error: 'token invalid' });
+			return res.status(401).json({ error: 'token invalid' });
 		}
 	}
 
