@@ -83,7 +83,6 @@ describe('When deleting a blog', () => {
 	});
 
 	test('nonexistent id returns 404', async () => {
-		const blogsAtStart = await helper.blogsInDb();
 		const blogToDelete = await helper.nonExistingId();
 
 		await api.delete(`/api/blogs/${blogToDelete}`).expect(404);
@@ -93,8 +92,6 @@ describe('When deleting a blog', () => {
 	});
 
 	test('malformed id returns 400', async () => {
-		const blogsAtStart = await helper.blogsInDb();
-
 		await api.delete('/api/blogs/badbeef').expect(400);
 
 		const blogsAtEnd = await helper.blogsInDb();
