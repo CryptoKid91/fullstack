@@ -1,5 +1,15 @@
 @baseUrl = http://localhost:3001/api
 
+POST {{baseUrl}}/login
+content-type: application/json
+
+{
+	"username": "tukko",
+	"password": "hunter2"
+}
+
+###
+
 # @name create
 POST {{baseUrl}}/blogs
 content-type: application/json
@@ -12,5 +22,6 @@ content-type: application/json
 }
 
 ###
+
 @id = {{create.response.body.id}}
 DELETE {{baseUrl}}/blogs/{{id}}

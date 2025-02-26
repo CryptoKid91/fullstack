@@ -9,7 +9,12 @@ blogsRouter.get('/', async (req, res) => {
 
 blogsRouter.post('/', async (req, res) => {
 	const { title, author, url, likes } = req.body;
-	const userRecord = await User.findById('67bdcd362f8bd71ab8389b4a');
+
+	const userRecord = await User.findById(req.uid);
+	if (!userRecord) {
+		return res.status(401).end();
+	}
+
 	const user = userRecord._id;
 	const blog = new Blog({ title, author, url, likes, user });
 
@@ -22,6 +27,14 @@ blogsRouter.post('/', async (req, res) => {
 
 blogsRouter.delete('/:id', async (req, res) => {
 	const id = req.params.id;
+	const blog = await Blog.findById(id);
+
+	if (!blog) {
+		res.status(404).end();
+	} else if (blog.user.toString() !== req.uid) {
+		return res.status(401).end();
+	}
+
 	const result = await Blog.findByIdAndDelete(id);
 
 	if (result) {
