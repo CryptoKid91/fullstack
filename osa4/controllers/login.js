@@ -28,6 +28,7 @@ loginRouter.post('/', async (req, res) => {
 	res.status(200)
 		.cookie('access_token', token, {
 			httpOnly: true,
+			sameSite: 'Strict',
 		})
 		.json({ username: user.username, name: user.name });
 });
@@ -44,7 +45,13 @@ loginRouter.get('/', async (req, res) => {
 });
 
 loginRouter.delete('/', (req, res) => {
-	return res.clearCookie('access_token').status(204).end();
+	return res
+		.clearCookie('access_token', {
+			httpOnly: true,
+			sameSite: 'Strict',
+		})
+		.status(204)
+		.end();
 });
 
 module.exports = loginRouter;
