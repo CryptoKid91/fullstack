@@ -1,40 +1,25 @@
 import { useState } from 'react';
-import { blogService } from '../services/blogs';
 
-export const NewBlog = ({ blogs, setBlogs, notify, setUser }) => {
+export const NewBlog = ({ createBlog }) => {
 	const [title, setTitle] = useState('');
 	const [author, setAuthor] = useState('');
 	const [url, setUrl] = useState('');
 
-	const createBlog = async (event) => {
+	const handleSubmit = async (event) => {
 		event.preventDefault();
-		const newBlog = { title, author, url };
+		const newBlog = { title, author, url, likes: 0 };
 		try {
-			const response = await blogService.create(newBlog);
-			setBlogs(blogs.concat(response));
+			await createBlog(newBlog);
 			setTitle('');
 			setAuthor('');
 			setUrl('');
-			notify(
-				`A new blog with title ${response.title} by ${response.author} added`,
-				'notice'
-			);
-		} catch (error) {
-			if (error.name === 'AxiosError' && error.status === 401) {
-				notify('Error, user not logged in', 'error');
-				window.localStorage.removeItem('user');
-				setUser(null);
-			} else {
-				console.log(error);
-				notify(`Error adding new blog: ${error.message}`, 'error');
-			}
-		}
+		} catch {}
 	};
 
 	return (
 		<div>
 			<h2>Create new</h2>
-			<form onSubmit={createBlog}>
+			<form onSubmit={handleSubmit}>
 				Title:{' '}
 				<input
 					value={title}

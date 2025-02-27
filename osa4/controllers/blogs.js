@@ -41,7 +41,6 @@ blogsRouter.delete('/:id', async (req, res) => {
 		const user = await User.findById(result.user);
 		user.blogs = user.blogs.filter((bid) => bid.toString() !== id);
 		await user.save();
-
 		res.status(204).end();
 	} else {
 		res.status(404).end();

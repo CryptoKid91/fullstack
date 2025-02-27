@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
-import { Blog } from './components/Blog';
+import { useState, useEffect, useRef } from 'react';
 import { blogService } from './services/blogs';
 import { Login } from './components/Login';
-import * as loginService from './services/login';
+import { loginService } from './services/login';
 import { Notification } from './components/Notification';
 import { Bloglist } from './components/Bloglist';
 import { NewBlog } from './components/NewBlog';
+import { Togglable } from './components/Togglable';
 
 const App = () => {
 	const [blogs, setBlogs] = useState([]);
@@ -16,6 +16,7 @@ const App = () => {
 		message: '',
 		className: '',
 	});
+	const blogFormRef = useRef();
 
 	useEffect(() => {
 		blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -69,6 +70,63 @@ const App = () => {
 		setUser(null);
 	};
 
+	const createBlog = async (newBlog) => {
+		try {
+			const response = await blogService.create(newBlog);
+			setBlogs(blogs.concat(response));
+			notify(
+				`A new blog with title ${response.title} by ${response.author} added`,
+				'notice'
+			);
+			blogFormRef.current.toggleVisibility();
+		} catch (error) {
+			if (error.name === 'AxiosError' && error.status === 401) {
+				notify('Error, user not logged in', 'error');
+				window.localStorage.removeItem('user');
+				setUser(null);
+			} else {
+				console.log(error);
+				notify(
+					`Error adding new blog: ${error.response.data.error}`,
+					'error'
+				);
+			}
+			throw new Error();
+		}
+	};
+
+	const addLike = (blog) => async () => {
+		const updatedBlog = await blogService.update(blog.id, {
+			likes: (blog.likes || 0) + 1,
+		});
+		setBlogs(blogs.map((b) => (b.id === updatedBlog.id ? updatedBlog : b)));
+	};
+
+	const deleteBlog = (blog) => async () => {
+		if (window.confirm(`Delete blog '${blog.title}'?`)) {
+			try {
+				await blogService.remove(blog.id);
+				notify(`Succesfully deleted blog '${blog.title}'`, 'notice');
+				setBlogs(blogs.filter((b) => b.id !== blog.id));
+			} catch (error) {
+				if (error.name === 'AxiosError' && error.status === 401) {
+					notify('Error, user not logged in', 'error');
+					window.localStorage.removeItem('user');
+					setUser(null);
+				} else if (
+					error.name === 'AxiosError' &&
+					error.status === 404
+				) {
+					notify('Blog already deleted', 'notice');
+					setBlogs(blogs.filter((b) => b.id !== blog.id));
+				} else {
+					console.log(error);
+					notify(`Error adding new blog: ${error.message}`, 'error');
+				}
+			}
+		}
+	};
+
 	return (
 		<div>
 			<h1>Blogs</h1>
@@ -88,11 +146,15 @@ const App = () => {
 				<div>
 					<Bloglist
 						blogs={blogs}
-						user={user.name}
+						user={user}
 						logout={handleLogout}
+						addLike={addLike}
+						deleteBlog={deleteBlog}
 					/>
 					<br />
-					<NewBlog {...{ blogs, setBlogs, notify, setUser }} />
+					<Togglable buttonLabel="New blog" ref={blogFormRef}>
+						<NewBlog createBlog={createBlog} />
+					</Togglable>
 				</div>
 			)}
 		</div>

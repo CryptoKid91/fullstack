@@ -1,11 +1,20 @@
 import { Blog } from './Blog';
 
-export const Bloglist = ({ blogs, user, logout }) => (
+export const Bloglist = ({ blogs, user, logout, addLike, deleteBlog }) => (
 	<div>
-		Logged in as {user} <button onClick={logout}>logout</button>
+		Logged in as {user.name} <button onClick={logout}>logout</button>
 		<br />
-		{blogs.map((blog) => (
-			<Blog key={blog.id} blog={blog} />
-		))}
+		<br />
+		{blogs
+			.sort((a, b) => b.likes - a.likes)
+			.map((blog) => (
+				<Blog
+					key={blog.id}
+					blog={blog}
+					addLike={addLike(blog)}
+					user={user}
+					deleteBlog={deleteBlog(blog)}
+				/>
+			))}
 	</div>
 );

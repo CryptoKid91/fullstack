@@ -9,8 +9,7 @@ export const Login = ({
 		<h2>Login</h2>
 		<form onSubmit={handleLogin}>
 			<div>
-				{' '}
-				username
+				username:{' '}
 				<input
 					type="text"
 					value={username}
@@ -19,7 +18,7 @@ export const Login = ({
 				/>
 			</div>
 			<div>
-				password
+				password:{' '}
 				<input
 					type="password"
 					value={password}
