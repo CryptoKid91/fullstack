@@ -79,6 +79,7 @@ const App = () => {
 				'notice'
 			);
 			blogFormRef.current.toggleVisibility();
+			return true;
 		} catch (error) {
 			if (error.name === 'AxiosError' && error.status === 401) {
 				notify('Error, user not logged in', 'error');
@@ -91,7 +92,7 @@ const App = () => {
 					'error'
 				);
 			}
-			throw new Error();
+			return false;
 		}
 	};
 

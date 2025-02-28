@@ -1,10 +1,9 @@
 import PropTypes from 'prop-types';
 
 export const Blog = ({ blog, addLike, user, deleteBlog }) => (
-	<div>
+	<div className="blog">
 		{blog.title}, {blog.author}, likes: {blog.likes}{' '}
 		<button onClick={addLike}>Like</button>{' '}
-		{/* Backend probably should return uid too... */}
 		{blog.user.username === user.username && (
 			<button onClick={deleteBlog}>Delete</button>
 		)}

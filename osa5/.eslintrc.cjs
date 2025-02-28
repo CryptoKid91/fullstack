@@ -35,6 +35,5 @@ module.exports = {
 				functions: 'never',
 			},
 		],
-		'no-empty': 0,
 	},
 };

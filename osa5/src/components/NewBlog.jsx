@@ -7,13 +7,17 @@ export const NewBlog = ({ createBlog }) => {
 
 	const handleSubmit = async (event) => {
 		event.preventDefault();
-		const newBlog = { title, author, url, likes: 0 };
-		try {
-			await createBlog(newBlog);
+		const success = await createBlog({
+			title,
+			author,
+			url,
+			likes: 0,
+		});
+		if (success) {
 			setTitle('');
 			setAuthor('');
 			setUrl('');
-		} catch {}
+		}
 	};
 
 	return (
@@ -24,18 +28,21 @@ export const NewBlog = ({ createBlog }) => {
 				<input
 					value={title}
 					onChange={(event) => setTitle(event.target.value)}
+					id="title-input"
 				/>
 				<br />
 				Author:{' '}
 				<input
 					value={author}
 					onChange={(event) => setAuthor(event.target.value)}
+					id="author-input"
 				/>
 				<br />
 				URL:{' '}
 				<input
 					value={url}
 					onChange={(event) => setUrl(event.target.value)}
+					id="url-input"
 				/>
 				<br />
 				<button type="submit">Create</button>
