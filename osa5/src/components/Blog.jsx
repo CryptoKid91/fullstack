@@ -4,7 +4,7 @@ export const Blog = ({ blog, addLike, user, deleteBlog }) => (
 	<div className="blog">
 		{blog.title}, {blog.author}, likes: {blog.likes}{' '}
 		<button onClick={addLike}>Like</button>{' '}
-		{blog.user.username === user.username && (
+		{blog.user?.username === user.username && (
 			<button onClick={deleteBlog}>Delete</button>
 		)}
 	</div>
