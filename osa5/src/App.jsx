@@ -137,7 +137,7 @@ const App = () => {
 					setBlogs(blogs.filter((b) => b.id !== blog.id));
 				} else {
 					console.log(error);
-					notify(`Error adding new blog: ${error.message}`, 'error');
+					notify(`Error deleting blog: ${error.message}`, 'error');
 				}
 			}
 		}
