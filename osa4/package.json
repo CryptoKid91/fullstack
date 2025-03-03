@@ -13,7 +13,8 @@
 		"build:ui:win": "@powershell Remove-Item -Recurse -Force dist && cd ../osa2/puhelinluettelo && npm run build && @powershell Copy-Item dist -Recurse  ../../osa3",
 		"build:ui": "rm -rf dist && cd ../osa2/puhelinluettelo && npm run build && cp -r dist ../../osa3",
 		"deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push",
-		"lint": "eslint ."
+		"lint": "eslint .",
+		"start:test": "cross-env NODE_ENV=test node index.js"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.20.0",

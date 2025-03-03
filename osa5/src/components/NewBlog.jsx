@@ -45,7 +45,9 @@ export const NewBlog = ({ createBlog }) => {
 					id="url-input"
 				/>
 				<br />
-				<button type="submit">Create</button>
+				<button id="new-blog-button" type="submit">
+					Create
+				</button>
 			</form>
 		</div>
 	);

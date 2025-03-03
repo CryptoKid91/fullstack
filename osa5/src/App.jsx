@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { blogService } from './services/blogs';
 import { Login } from './components/Login';
 import { loginService } from './services/login';
@@ -22,20 +22,31 @@ const App = () => {
 		blogService.getAll().then((blogs) => setBlogs(blogs));
 	}, []);
 
-	useEffect(() => {
-		//Initially check local storage for faster response (and to comply with the assignment :))
+	// useLayoutEffect prevents the login form from showing for a split second before the effect is run
+	useLayoutEffect(() => {
+		// Initially check local storage for faster response (and to comply with the assignment :))
 		const storedUser = window.localStorage.getItem('user');
 		if (storedUser) {
-			setUser(storedUser);
+			const user = JSON.parse(storedUser);
+			setUser(user);
 		}
+	}, []);
 
+	useEffect(() => {
 		// Verify login status from server
 		(async () => {
+			let user = null;
 			try {
-				const user = await loginService.getLoginStatus();
-				setUser(user);
+				user = await loginService.getLoginStatus();
 			} catch {
-				setUser(null);
+				user = null;
+			} finally {
+				setUser(user);
+				if (user) {
+					window.localStorage.setItem('user', JSON.stringify(user));
+				} else {
+					window.localStorage.removeItem('user');
+				}
 			}
 		})();
 	}, []);
@@ -65,9 +76,13 @@ const App = () => {
 
 	const handleLogout = async (event) => {
 		event.preventDefault();
-		await loginService.logout();
-		window.localStorage.removeItem('user');
-		setUser(null);
+		try {
+			await loginService.logout();
+		} catch {
+		} finally {
+			window.localStorage.removeItem('user');
+			setUser(null);
+		}
 	};
 
 	const createBlog = async (newBlog) => {
